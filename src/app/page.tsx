@@ -1,7 +1,67 @@
+"use client"
+
 import Image from "next/image";
+import { Socket, io } from "socket.io-client";
 import CharacterButton from "./components/CharacterButton";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Home() {
+
+  const searchParams = useSearchParams();
+
+  const [room, setroom] = useState<string>('');
+  const [socket, setsocket] = useState<Socket>();
+
+  useEffect(function () {
+
+    if (typeof window !== 'undefined') {
+
+      const room = searchParams?.get('room') || window.crypto.randomUUID();
+
+      window.history.replaceState(null, '', `?room=${room}`);
+
+      setroom(room);
+
+    }
+
+  }, []);
+
+  useEffect(function () {
+
+    if (room) {
+
+      fetch('/api/game_server').finally(function () {
+
+        const socket = io();
+
+        setsocket(socket);
+
+        socket.on("connect", () => {
+
+          console.log(`User ${socket.id} connected`);
+
+          socket.emit("enter-the-room", room);
+
+        });
+
+        socket.on("game-start", (arg) => {
+          console.log(arg); // world
+        });
+
+      });
+
+    }
+
+  }, [room]);
+
+  function handleEmojiSelection(emoji: string) {
+
+    if (socket) {
+      socket.emit("select-emoji", emoji);
+    }
+
+  }
 
   return (
 
@@ -17,15 +77,20 @@ export default function Home() {
         <span>Selecione seu personagem:</span>
 
         <div>
-          <CharacterButton emoji="👨" />
-          <CharacterButton emoji="👩" />
-          <CharacterButton emoji="🤖" />
-          <CharacterButton emoji="👾" />
-          <CharacterButton emoji="👽" />
-          <CharacterButton emoji="💀" />
-          <CharacterButton emoji="👻" />
-          <CharacterButton emoji="❓" />
+          <CharacterButton onClick={() => handleEmojiSelection("👨")} emoji="👨" />
+          <CharacterButton onClick={() => handleEmojiSelection("👩")} emoji="👩" />
+          <CharacterButton onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
+          <CharacterButton onClick={() => handleEmojiSelection("👾")} emoji="👾" />
+          <CharacterButton onClick={() => handleEmojiSelection("👽")} emoji="👽" />
+          <CharacterButton onClick={() => handleEmojiSelection("💀")} emoji="💀" />
+          <CharacterButton onClick={() => handleEmojiSelection("👻")} emoji="👻" />
+          <CharacterButton onClick={() => handleEmojiSelection("❓")} emoji="❓" />
         </div>
+
+        <br />
+
+        <span>Envie o link para um amigo:</span>
+        <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} readOnly></input>
 
       </div>
 
