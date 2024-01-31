@@ -5,6 +5,7 @@ import { Socket, io } from "socket.io-client";
 import CharacterButton from "./components/CharacterButton";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import GameBoard from "./components/GameBoard";
 
 export default function Home() {
 
@@ -12,6 +13,10 @@ export default function Home() {
 
   const [room, setroom] = useState<string>('');
   const [socket, setsocket] = useState<Socket>();
+
+  const [wasEmojiSelected, setwasEmojiSelected] = useState(false);
+
+  const [gameObject, setgameObject] = useState();
 
   useEffect(function () {
 
@@ -45,8 +50,10 @@ export default function Home() {
 
         });
 
-        socket.on("game-start", (arg) => {
-          console.log(arg); // world
+        socket.on("game-start", (gameObject) => {
+
+          setgameObject(gameObject);
+
         });
 
       });
@@ -58,7 +65,11 @@ export default function Home() {
   function handleEmojiSelection(emoji: string) {
 
     if (socket) {
+
       socket.emit("select-emoji", emoji);
+
+      setwasEmojiSelected(true);
+
     }
 
   }
@@ -72,27 +83,49 @@ export default function Home() {
         <h2>Multiplayer 🎮</h2>
       </header>
 
-      <div className="flex flex-col justify-center h-full">
+      {gameObject ?
 
-        <span>Selecione seu personagem:</span>
+        <div className="flex justify-center items-center h-full">
 
-        <div>
-          <CharacterButton onClick={() => handleEmojiSelection("👨")} emoji="👨" />
-          <CharacterButton onClick={() => handleEmojiSelection("👩")} emoji="👩" />
-          <CharacterButton onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
-          <CharacterButton onClick={() => handleEmojiSelection("👾")} emoji="👾" />
-          <CharacterButton onClick={() => handleEmojiSelection("👽")} emoji="👽" />
-          <CharacterButton onClick={() => handleEmojiSelection("💀")} emoji="💀" />
-          <CharacterButton onClick={() => handleEmojiSelection("👻")} emoji="👻" />
-          <CharacterButton onClick={() => handleEmojiSelection("❓")} emoji="❓" />
+          <GameBoard player1Emoji="👨" player2Emoji="❓" turn={2} onChangeGame={(a) => console.log(a)} game={[
+            [null, null, null],
+            [null, null, null],
+            [null, null, null]
+          ]} />
+
+        </div> :
+
+        <div className="flex flex-col justify-center h-full">
+
+          <div className={`${wasEmojiSelected ? 'opacity-0 h-0 scale-y-0 -mt-9 transition-all' : ''}`}>
+
+            <span>Selecione seu personagem:</span>
+
+            <div>
+              <CharacterButton onClick={() => handleEmojiSelection("👨")} emoji="👨" />
+              <CharacterButton onClick={() => handleEmojiSelection("👩")} emoji="👩" />
+              <CharacterButton onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
+              <CharacterButton onClick={() => handleEmojiSelection("👾")} emoji="👾" />
+              <CharacterButton onClick={() => handleEmojiSelection("👽")} emoji="👽" />
+              <CharacterButton onClick={() => handleEmojiSelection("💀")} emoji="💀" />
+              <CharacterButton onClick={() => handleEmojiSelection("👻")} emoji="👻" />
+              <CharacterButton onClick={() => handleEmojiSelection("❓")} emoji="❓" />
+            </div>
+
+          </div>
+
+          <br />
+
+          <div className={`flex flex-col ${wasEmojiSelected ? '' : 'opacity-0 h-0 scale-y-0 transition-all'}`}>
+
+            <span>Envie o link para um amigo:</span>
+            <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} readOnly></input>
+
+          </div>
+
         </div>
 
-        <br />
-
-        <span>Envie o link para um amigo:</span>
-        <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} readOnly></input>
-
-      </div>
+      }
 
       <footer className="mt-4 mb-4">
         <h6>Developed by 🤓 Júlio Faria</h6>

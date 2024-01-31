@@ -40,8 +40,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const roomName = room[0];
         const roomPlayers = Array.from(room[1])
 
-        console.log(roomName, roomPlayers)
-
         // The game starts with 2 players.
         if (roomPlayers.length === 2) {
 
