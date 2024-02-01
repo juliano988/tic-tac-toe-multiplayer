@@ -45,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const player1Socket = io.sockets.sockets.get(Array.from(roomPlayers)[0]);
           const player2Socket = io.sockets.sockets.get(Array.from(roomPlayers)[1]);
 
-          if (player1Socket && player2Socket) {
+          if (player1Socket.emoji && player2Socket.emoji) {
 
             io.to(roomName).emit("game-start", {
               player1: {
