@@ -36,15 +36,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log(`User ${socket.id} selected the ${socket.emoji} emoji`);
 
         // The 0 room is the default room, and the 1 room is our game room.
-        const room = Array.from(io.sockets.adapter.rooms)[1];
-        const roomName = room[0];
-        const roomPlayers = Array.from(room[1])
+        const roomName = Array.from(socket.rooms)[1];
+        const roomPlayers = io.sockets.adapter.rooms.get(roomName);
 
         // The game starts with 2 players.
-        if (roomPlayers.length === 2) {
+        if (roomPlayers?.size === 2) {
 
-          const player1Socket = io.sockets.sockets.get(roomPlayers[0]);
-          const player2Socket = io.sockets.sockets.get(roomPlayers[1]);
+          const player1Socket = io.sockets.sockets.get(Array.from(roomPlayers)[0]);
+          const player2Socket = io.sockets.sockets.get(Array.from(roomPlayers)[1]);
 
           if (player1Socket && player2Socket) {
 
@@ -60,9 +59,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 score: 0
               },
               game: [
-                [null, null, null],
-                [null, null, null],
-                [null, null, null]
+                [0, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0]
               ],
               turn: player1Socket.id,
               result: null
@@ -73,6 +72,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
       });
+
+      socket.on('game-update', function (gameObject: Game) {
+
+        console.log(`The game was updated to: ${gameObject.game}`);
+
+        gameObject.turn = gameObject.turn === gameObject.player1.id ? gameObject.player2.id : gameObject.player1.id;
+
+        console.log(`Now is the turn of player: ${gameObject.turn}`);
+
+        // The 0 room is the default room, and the 1 room is our game room.
+        const roomName = Array.from(socket.rooms)[1];
+
+        io.to(roomName).emit("game-updated", gameObject);
+
+      })
 
     });
 

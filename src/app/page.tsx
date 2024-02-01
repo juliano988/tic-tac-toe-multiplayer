@@ -16,7 +16,7 @@ export default function Home() {
 
   const [wasEmojiSelected, setwasEmojiSelected] = useState(false);
 
-  const [gameObject, setgameObject] = useState();
+  const [gameObject, setgameObject] = useState<Game>();
 
   useEffect(function () {
 
@@ -50,7 +50,13 @@ export default function Home() {
 
         });
 
-        socket.on("game-start", (gameObject) => {
+        socket.on("game-start", (gameObject: Game) => {
+
+          setgameObject(gameObject);
+
+        });
+
+        socket.on("game-updated", (gameObject: Game) => {
 
           setgameObject(gameObject);
 
@@ -74,6 +80,18 @@ export default function Home() {
 
   }
 
+  function handleGameChange(game: Game['game']) {
+
+    if (socket && gameObject) {
+
+      gameObject.game = game;
+
+      socket.emit("game-update", gameObject);
+
+    }
+
+  }
+
   return (
 
     <>
@@ -87,11 +105,13 @@ export default function Home() {
 
         <div className="flex justify-center items-center h-full">
 
-          <GameBoard player1Emoji="👨" player2Emoji="❓" turn={2} onChangeGame={(a) => console.log(a)} game={[
-            [null, null, null],
-            [null, null, null],
-            [null, null, null]
-          ]} />
+          <GameBoard
+            userId={socket?.id as string}
+            player1={gameObject.player1}
+            player2={gameObject.player2}
+            turn={gameObject.turn}
+            game={gameObject.game}
+            onChangeGame={(game) => handleGameChange(game)} />
 
         </div> :
 
