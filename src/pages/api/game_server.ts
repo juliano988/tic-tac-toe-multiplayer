@@ -80,10 +80,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         console.log(`[${roomName2}] The game was updated to: ${gameObject.game}`);
 
-        gameObject.turn = gameObject.turn === gameObject.player1.id ? gameObject.player2.id : gameObject.player1.id;
-
-        console.log(`[${roomName2}] Now is the turn of player: ${gameObject.turn}`);
-
         let primaryDiagonal: Array<0 | 1 | 2> = [];
         let secondaryDiagonal: Array<0 | 1 | 2> = [];
 
@@ -143,6 +139,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log(`[${roomName2}] Tied match!`);
 
           }
+
+        } else {
+
+          gameObject.turn = gameObject.turn === gameObject.player1.id ? gameObject.player2.id : gameObject.player1.id;
+
+          console.log(`[${roomName2}] Now is the turn of player: ${gameObject.turn}`);
 
         }
 

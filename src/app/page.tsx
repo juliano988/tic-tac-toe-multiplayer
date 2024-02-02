@@ -6,6 +6,7 @@ import CharacterButton from "./components/CharacterButton";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import GameBoard from "./components/GameBoard";
+import EndGame from "./components/EndGame";
 
 export default function Home() {
 
@@ -105,7 +106,7 @@ export default function Home() {
 
         <div className="flex flex-col justify-center items-center h-full">
 
-          {gameObject.turn === socket?.id ? <span className={`mb-3 text-lg animate-bounce transition-all`}>👇 Sua vez! 👇</span> : <></>}
+          {gameObject.turn === socket?.id ? <span className={`mb-3 text-lg motion-safe:animate-bounce transition-all`}>👇 Sua vez! 👇</span> : <></>}
           {gameObject.turn !== socket?.id ? <span className={`mb-3 text-lg transition-all`}>
             {socket?.id === gameObject.player1.id ? gameObject.player1.emoji : gameObject.player2.emoji} Pensando...
           </span> : <></>}
@@ -169,6 +170,13 @@ export default function Home() {
       <footer className="mt-4 mb-4">
         <h6>Developed by 🤓 Júlio Faria</h6>
       </footer>
+
+      {gameObject ?
+        <EndGame
+          // @ts-ignore
+          socket={socket as Socket}
+          gameObject={gameObject} />
+        : <></>}
 
     </>
 
