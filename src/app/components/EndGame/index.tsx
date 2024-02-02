@@ -54,15 +54,13 @@ export default function EndGame(props: {
 
       <div className="fixed w-full h-full backdrop-blur-sm flex gap-5 flex-col justify-center items-center">
 
-        <span className="text-9xl animate-bounce">{props.gameObject.result === 1 ? props.gameObject.player1.emoji : props.gameObject.player2.emoji}</span>
+        <span className="text-9xl animate-bounce">{!props.gameObject.result ? <>🤝</> : props.gameObject.result === 1 ? props.gameObject.player1.emoji : props.gameObject.player2.emoji}</span>
 
         {!props.gameObject.result ?
-          <span className="text-center text-4xl font-semibold">EMPATE!<br />🤝</span> :
-          <>
-            {isUserTheWinner(props.socket.id) ?
-              <span className="text-center text-4xl font-semibold">PARABÉNS PELA<br />VITÓRIA!<br />🏆</span> :
-              <span className="text-center text-4xl font-semibold">VOCÊ PERDEU!<br />😭</span>}
-          </>
+          <span className="text-center text-4xl font-semibold">EMPATE!</span> :
+          isUserTheWinner(props.socket.id) ?
+            <span className="text-center text-4xl font-semibold">PARABÉNS PELA<br />VITÓRIA!<br />🏆</span> :
+            <span className="text-center text-4xl font-semibold">VOCÊ PERDEU!<br />😭</span>
         }
 
         <span className="text-3xl font-semibold">{`${props.gameObject.player1.emoji} ${props.gameObject.player1.score} X ${props.gameObject.player2.score} ${props.gameObject.player2.emoji}`}</span>
