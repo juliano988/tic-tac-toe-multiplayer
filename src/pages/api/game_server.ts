@@ -45,11 +45,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         sendSelectedEmojisEvent(io, roomName);
 
-        // The game starts with 2 players.
-        if (roomPlayers?.size === 2) {
+        const player1Socket = io.sockets.sockets.get(Array.from(roomPlayers as unknown as Array<string>)[0]);
+        const player2Socket = io.sockets.sockets.get(Array.from(roomPlayers as unknown as Array<string>)[1]);
 
-          const player1Socket = io.sockets.sockets.get(Array.from(roomPlayers)[0]);
-          const player2Socket = io.sockets.sockets.get(Array.from(roomPlayers)[1]);
+        // The game starts with 2 players.
+        // @ts-ignore
+        if (player1Socket?.emoji && player2Socket?.emoji) {
 
           // Can only enter in the match if the user has selected a emoji.
           // @ts-ignore

@@ -78,6 +78,12 @@ export default function Home() {
 
   }, [room]);
 
+  function isTheUserSpectator(socket: Socket, gameObject: Game) {
+
+    return socket?.id !== gameObject?.player1.id && socket?.id !== gameObject?.player2.id;
+
+  }
+
   function handleEmojiSelection(emoji: string) {
 
     if (socket) {
@@ -104,7 +110,7 @@ export default function Home() {
 
   function handleCopyGameLink() {
 
-    navigator.clipboard.writeText(`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`);
+    navigator.clipboard.writeText(`${typeof window !== 'undefined' && window.location.origin}?room=${room}`);
 
     setwasLinkCopied(true);
 
@@ -119,14 +125,11 @@ export default function Home() {
         <h2 className="text-3xl">Multiplayer 🎮</h2>
       </header>
 
-      {gameObject ?
+      {gameObject?.player1.emoji && gameObject?.player2.emoji && socket && isTheUserSpectator(socket, gameObject) ?
 
         <div className="flex flex-col justify-center items-center h-full">
 
-          {gameObject.turn === socket?.id ? <span className={`mb-3 text-lg motion-safe:animate-bounce transition-all`}>👇 Sua vez! 👇</span> : <></>}
-          {gameObject.turn !== socket?.id ? <span className={`mb-3 text-lg transition-all`}>
-            {socket?.id === gameObject.player1.id ? gameObject.player1.emoji : gameObject.player2.emoji} Pensando...
-          </span> : <></>}
+          <span className={`mb-3 text-lg transition-all italic`}>Você está como espectador... 👀</span>
 
           <div className="flex justify-between items-end w-[240px] mb-2">
 
@@ -152,37 +155,70 @@ export default function Home() {
 
         </div> :
 
-        <div className="flex flex-col justify-center items-center h-full">
+        gameObject ?
 
-          <div className={`${wasEmojiSelected ? 'opacity-0 h-0 scale-y-0 -mt-9 transition-all' : ''} flex flex-col gap-4 max-w-80`}>
+          <div className="flex flex-col justify-center items-center h-full">
 
-            <span className="text-2xl">Selecione seu personagem:</span>
+            {gameObject.turn === socket?.id ? <span className={`mb-3 text-lg motion-safe:animate-bounce transition-all`}>👇 Sua vez! 👇</span> : <></>}
+            {gameObject.turn !== socket?.id ? <span className={`mb-3 text-lg transition-all`}>
+              {socket?.id === gameObject.player1.id ? gameObject.player1.emoji : gameObject.player2.emoji} Pensando...
+            </span> : <></>}
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👨")} emoji="👨" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👩")} emoji="👩" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👾")} emoji="👾" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👽")} emoji="👽" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("💀")} emoji="💀" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👻")} emoji="👻" />
-              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("❓")} emoji="❓" />
+            <div className="flex justify-between items-end w-[240px] mb-2">
+
+              <div>
+                <h5 className={`${gameObject.turn === gameObject.player1.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject.player1.emoji} Jogador 1</h5>
+                <span>{gameObject.player1.score}</span>
+              </div>
+
+              <div>
+                <h5 className={`${gameObject.turn === gameObject.player2.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject.player2.emoji} Jogador 2</h5>
+                <span>{gameObject.player2.score}</span>
+              </div>
+
+            </div>
+
+            <GameBoard
+              userId={socket?.id as string}
+              player1={gameObject.player1}
+              player2={gameObject.player2}
+              turn={gameObject.turn}
+              game={gameObject.game}
+              onChangeGame={(game) => handleGameChange(game)} />
+
+          </div> :
+
+          <div className="flex flex-col justify-center items-center h-full">
+
+            <div className={`${wasEmojiSelected ? 'opacity-0 h-0 scale-y-0 -mt-9 transition-all' : ''} flex flex-col gap-4 max-w-80`}>
+
+              <span className="text-2xl">Selecione seu personagem:</span>
+
+              <div className="flex flex-wrap justify-center gap-4">
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👨")} emoji="👨" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👩")} emoji="👩" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👾")} emoji="👾" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👽")} emoji="👽" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("💀")} emoji="💀" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👻")} emoji="👻" />
+                <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("❓")} emoji="❓" />
+              </div>
+
+            </div>
+
+            <br />
+
+            <div className={`flex flex-col gap-2 ${wasEmojiSelected ? '' : 'opacity-0 h-0 scale-y-0 transition-all'} max-w-80`}>
+
+              <span className="text-2xl">Envie o link para um amigo:</span>
+              <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} onClick={() => handleCopyGameLink()} readOnly></input>
+
+              <span className="italic">{wasLinkCopied ? 'Link copiado!  ✅' : 'Aguardando link ser copiado...'}</span>
+
             </div>
 
           </div>
-
-          <br />
-
-          <div className={`flex flex-col gap-2 ${wasEmojiSelected ? '' : 'opacity-0 h-0 scale-y-0 transition-all'} max-w-80`}>
-
-            <span className="text-2xl">Envie o link para um amigo:</span>
-            <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} onClick={() => handleCopyGameLink()} readOnly></input>
-
-            <span className="italic">{wasLinkCopied ? 'Link copiado!  ✅' : 'Aguardando link ser copiado...'}</span>
-
-          </div>
-
-        </div>
 
       }
 
@@ -190,12 +226,11 @@ export default function Home() {
         <h6>Developed by 🤓 <a className="text-blue-600" href="https://julio-faria-portfolio-jf.netlify.app/" target="_blank">Júlio Faria</a></h6>
       </footer>
 
-      {gameObject ?
+      {gameObject &&
         <EndGame
           // @ts-ignore
           socket={socket as Socket}
-          gameObject={gameObject} />
-        : <></>}
+          gameObject={gameObject} />}
 
     </>
 

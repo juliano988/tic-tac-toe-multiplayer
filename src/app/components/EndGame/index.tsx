@@ -35,6 +35,12 @@ export default function EndGame(props: {
 
   }
 
+  function isTheUserSpectator(socket: Socket, gameObject: Game) {
+
+    return socket?.id !== gameObject?.player1.id && socket?.id !== gameObject?.player2.id;
+
+  }
+
   function handleRematch() {
 
     props.gameObject.result = null;
@@ -58,17 +64,22 @@ export default function EndGame(props: {
 
         {!props.gameObject.result ?
           <span className="text-center text-4xl font-semibold">EMPATE!</span> :
-          isUserTheWinner(props.socket.id) ?
-            <span className="text-center text-4xl font-semibold">PARABÉNS PELA<br />VITÓRIA!<br />🏆</span> :
-            <span className="text-center text-4xl font-semibold">VOCÊ PERDEU!<br />😭</span>
+
+          isTheUserSpectator(props.socket, props.gameObject) ?
+            <span className="text-center text-4xl font-semibold">VITÓRIA DO<br />JOGADOR {props.gameObject.result}!<br />🏆</span> :
+
+            isUserTheWinner(props.socket.id) ?
+              <span className="text-center text-4xl font-semibold">PARABÉNS PELA<br />VITÓRIA!<br />🏆</span> :
+              <span className="text-center text-4xl font-semibold">VOCÊ PERDEU!<br />😭</span>
         }
 
         <span className="text-3xl font-semibold">{`${props.gameObject.player1.emoji} ${props.gameObject.player1.score} X ${props.gameObject.player2.score} ${props.gameObject.player2.emoji}`}</span>
 
         {/* In tie, anyone can ask for a rematch */}
-        {isUserTheWinner(props.socket.id) ?
+        {isUserTheWinner(props.socket.id) || isTheUserSpectator(props.socket, props.gameObject) ?
           <span className="text-xl font-medium">Aguardando revanche...</span> :
           <button className="text-xl font-medium text-white bg-red-500 w-fit p-2 rounded" onClick={() => handleRematch()}>REVANCHE!</button>}
+
 
       </div>
 
