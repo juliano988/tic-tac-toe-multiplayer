@@ -35,8 +35,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const roomName = Array.from(socket.rooms)[1];
         const roomPlayers = io.sockets.adapter.rooms.get(roomName);
 
+        // @ts-ignore
         socket.emoji = emoji;
 
+        // @ts-ignore
         console.log(`[${roomName}] User ${socket.id} selected the ${socket.emoji} emoji`);
 
         // The game starts with 2 players.
@@ -45,16 +47,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const player1Socket = io.sockets.sockets.get(Array.from(roomPlayers)[0]);
           const player2Socket = io.sockets.sockets.get(Array.from(roomPlayers)[1]);
 
+          // Can only enter in the match if the user has selected a emoji.
+          // @ts-ignore
           if (player1Socket.emoji && player2Socket.emoji) {
 
             io.to(roomName).emit("game-start", {
               player1: {
                 id: player1Socket?.id,
+                // @ts-ignore
                 emoji: player1Socket.emoji,
                 score: 0
               },
               player2: {
                 id: player2Socket?.id,
+                // @ts-ignore
                 emoji: player2Socket.emoji,
                 score: 0
               },

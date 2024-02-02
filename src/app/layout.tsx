@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.scss";
-import React from "react";
-
-const inter = Inter({ subsets: ["latin"] });
+import React, { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Jogo da Velha 👵 Multiplayer",
@@ -15,7 +12,13 @@ export default function RootLayout(props: { children: Readonly<React.ReactNode> 
   return (
 
     <html lang="pt-BR">
-      <body className="bg-slate-200 text-center h-dvh flex flex-col">{props.children}</body>
+      <body className="bg-slate-200 text-center h-dvh flex flex-col">{
+        // Suspense was necessary to avoid the error:
+        // ⨯ useSearchParams() should be wrapped in a suspense boundary at page "/". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+        <Suspense>
+          {props.children}
+        </Suspense>
+      }</body>
     </html>
 
   );
