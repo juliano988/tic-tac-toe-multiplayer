@@ -16,6 +16,7 @@ export default function Home() {
   const [socket, setsocket] = useState<Socket>();
 
   const [wasEmojiSelected, setwasEmojiSelected] = useState(false);
+  const [selectedEmoji, setselectedEmojis] = useState<Array<string>>([]);
 
   const [gameObject, setgameObject] = useState<Game>();
 
@@ -50,6 +51,12 @@ export default function Home() {
           console.log(`User ${socket.id} connected`);
 
           socket.emit("enter-the-room", room);
+
+        });
+
+        socket.on("selected-emojis", (emojis: Array<string>) => {
+
+          setselectedEmojis(emojis);
 
         });
 
@@ -152,14 +159,14 @@ export default function Home() {
             <span className="text-2xl">Selecione seu personagem:</span>
 
             <div className="flex flex-wrap justify-center gap-4">
-              <CharacterButton onClick={() => handleEmojiSelection("👨")} emoji="👨" />
-              <CharacterButton onClick={() => handleEmojiSelection("👩")} emoji="👩" />
-              <CharacterButton onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
-              <CharacterButton onClick={() => handleEmojiSelection("👾")} emoji="👾" />
-              <CharacterButton onClick={() => handleEmojiSelection("👽")} emoji="👽" />
-              <CharacterButton onClick={() => handleEmojiSelection("💀")} emoji="💀" />
-              <CharacterButton onClick={() => handleEmojiSelection("👻")} emoji="👻" />
-              <CharacterButton onClick={() => handleEmojiSelection("❓")} emoji="❓" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👨")} emoji="👨" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👩")} emoji="👩" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👾")} emoji="👾" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👽")} emoji="👽" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("💀")} emoji="💀" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("👻")} emoji="👻" />
+              <CharacterButton selectedEmojis={selectedEmoji} onClick={() => handleEmojiSelection("❓")} emoji="❓" />
             </div>
 
           </div>
@@ -180,7 +187,7 @@ export default function Home() {
       }
 
       <footer className="mt-4 mb-4">
-        <h6>Developed by 🤓 Júlio Faria</h6>
+        <h6>Developed by 🤓 <a className="text-blue-600" href="https://julio-faria-portfolio-jf.netlify.app/" target="_blank">Júlio Faria</a></h6>
       </footer>
 
       {gameObject ?

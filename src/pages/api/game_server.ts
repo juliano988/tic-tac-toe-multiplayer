@@ -27,6 +27,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         console.log(`User ${socket.id} has joined to room: ${roomName}`);
 
+        sendSelectedEmojisEvent(io, roomName);
+
       });
 
       socket.on("select-emoji", (emoji: string) => {
@@ -40,6 +42,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // @ts-ignore
         console.log(`[${roomName}] User ${socket.id} selected the ${socket.emoji} emoji`);
+
+        sendSelectedEmojisEvent(io, roomName);
 
         // The game starts with 2 players.
         if (roomPlayers?.size === 2) {
@@ -168,5 +172,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   res.end();
+
+}
+
+// Send back the selected emojis to avoid the other player to select the same emojis.
+function sendSelectedEmojisEvent(io: Server, roomName: string) {
+
+  const roomPlayers = io.sockets.adapter.rooms.get(roomName);
+  // @ts-ignore
+  const emojis = Array.from(roomPlayers).map(function (player) {
+    // @ts-ignore
+    return io.sockets.sockets.get(player).emoji;
+
+  }).filter(function (emoji) { return emoji });
+
+  if (emojis.length) {
+    io.to(roomName).emit("selected-emojis", emojis);
+  }
 
 }
