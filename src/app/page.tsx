@@ -19,6 +19,8 @@ export default function Home() {
 
   const [gameObject, setgameObject] = useState<Game>();
 
+  const [wasLinkCopied, setwasLinkCopied] = useState<boolean>(false);
+
   useEffect(function () {
 
     if (typeof window !== 'undefined') {
@@ -93,13 +95,21 @@ export default function Home() {
 
   }
 
+  function handleCopyGameLink() {
+
+    navigator.clipboard.writeText(`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`);
+
+    setwasLinkCopied(true);
+
+  }
+
   return (
 
     <>
 
-      <header className="mt-4 mb-4">
-        <h1>Jogo da Velha 👵</h1>
-        <h2>Multiplayer 🎮</h2>
+      <header className="flex flex-col gap-2 mt-4 mb-4">
+        <h1 className="text-4xl font-medium">Jogo da Velha 👵</h1>
+        <h2 className="text-3xl">Multiplayer 🎮</h2>
       </header>
 
       {gameObject ?
@@ -135,13 +145,13 @@ export default function Home() {
 
         </div> :
 
-        <div className="flex flex-col justify-center h-full">
+        <div className="flex flex-col justify-center items-center h-full">
 
-          <div className={`${wasEmojiSelected ? 'opacity-0 h-0 scale-y-0 -mt-9 transition-all' : ''}`}>
+          <div className={`${wasEmojiSelected ? 'opacity-0 h-0 scale-y-0 -mt-9 transition-all' : ''} flex flex-col gap-4 max-w-80`}>
 
-            <span>Selecione seu personagem:</span>
+            <span className="text-2xl">Selecione seu personagem:</span>
 
-            <div>
+            <div className="flex flex-wrap justify-center gap-4">
               <CharacterButton onClick={() => handleEmojiSelection("👨")} emoji="👨" />
               <CharacterButton onClick={() => handleEmojiSelection("👩")} emoji="👩" />
               <CharacterButton onClick={() => handleEmojiSelection("🤖")} emoji="🤖" />
@@ -156,10 +166,12 @@ export default function Home() {
 
           <br />
 
-          <div className={`flex flex-col ${wasEmojiSelected ? '' : 'opacity-0 h-0 scale-y-0 transition-all'}`}>
+          <div className={`flex flex-col gap-2 ${wasEmojiSelected ? '' : 'opacity-0 h-0 scale-y-0 transition-all'} max-w-80`}>
 
-            <span>Envie o link para um amigo:</span>
-            <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} readOnly></input>
+            <span className="text-2xl">Envie o link para um amigo:</span>
+            <input className="text-center" value={`${typeof window !== 'undefined' ? window.location.origin : ''}?room=${room}`} onClick={() => handleCopyGameLink()} readOnly></input>
+
+            <span className="italic">{wasLinkCopied ? 'Link copiado!  ✅' : 'Aguardando link ser copiado...'}</span>
 
           </div>
 

@@ -4,7 +4,7 @@ export default function CharacterButton(props: { emoji: string } & DetailedHTMLP
 
   return (
 
-    <button {...props}>
+    <button className="text-5xl" {...props}>
       {props.emoji}
     </button>
 
