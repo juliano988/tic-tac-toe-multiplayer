@@ -78,21 +78,21 @@ export default function GameBoard(props: {
       <tbody className={`${props.userId === props.turn ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
 
         <tr>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p11')}>{p11}</td>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p12')}>{p12}</td>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p13')}>{p13}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p11')}>{p11}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p12')}>{p12}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p13')}>{p13}</td>
         </tr>
 
         <tr>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p21')}>{p21}</td>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p22')}>{p22}</td>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p23')}>{p23}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p21')}>{p21}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p22')}>{p22}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p23')}>{p23}</td>
         </tr>
 
         <tr>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p31')}>{p31}</td>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p32')}>{p32}</td>
-          <td className="border-solid border-black border w-20 h-20" onClick={() => handleClickPosition('p33')}>{p33}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p31')}>{p31}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p32')}>{p32}</td>
+          <td className="border-solid border-black border w-20 h-20 text-5xl" onClick={() => handleClickPosition('p33')}>{p33}</td>
         </tr>
 
       </tbody>

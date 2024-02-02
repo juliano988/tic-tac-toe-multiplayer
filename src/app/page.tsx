@@ -103,7 +103,26 @@ export default function Home() {
 
       {gameObject ?
 
-        <div className="flex justify-center items-center h-full">
+        <div className="flex flex-col justify-center items-center h-full">
+
+          {gameObject.turn === socket?.id ? <span className={`mb-3 text-lg animate-bounce transition-all`}>👇 Sua vez! 👇</span> : <></>}
+          {gameObject.turn !== socket?.id ? <span className={`mb-3 text-lg transition-all`}>
+            {socket?.id === gameObject.player1.id ? gameObject.player1.emoji : gameObject.player2.emoji} Pensando...
+          </span> : <></>}
+
+          <div className="flex justify-between items-end w-[240px] mb-2">
+
+            <div>
+              <h5 className={`${gameObject.turn === gameObject.player1.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject.player1.emoji} Jogador 1</h5>
+              <span>{gameObject.player1.score}</span>
+            </div>
+
+            <div>
+              <h5 className={`${gameObject.turn === gameObject.player2.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject.player2.emoji} Jogador 2</h5>
+              <span>{gameObject.player2.score}</span>
+            </div>
+
+          </div>
 
           <GameBoard
             userId={socket?.id as string}
