@@ -114,7 +114,7 @@ export default function Home() {
 
     navigator.share({
       title: 'Jogo da Velha 👵 Multiplayer',
-      text: `Jogue comigo uma partida de jogo da velha!\n\nSala: ${room}`,
+      text: `\nJogue comigo uma partida de jogo da velha!\n\nSala: ${room}\n`,
       url: roomURL
     })
 
