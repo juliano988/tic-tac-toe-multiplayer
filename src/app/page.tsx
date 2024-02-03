@@ -82,12 +82,6 @@ export default function Home() {
 
   }, [room]);
 
-  function isTheUserSpectator(socket: Socket, gameObject: Game) {
-
-    return socket?.id !== gameObject?.player1.id && socket?.id !== gameObject?.player2.id;
-
-  }
-
   function handleEmojiSelection(emoji: string) {
 
     if (socket) {
@@ -146,7 +140,7 @@ export default function Home() {
         <h2 className="text-3xl">Multiplayer 🎮</h2>
       </header>
 
-      {selectedEmoji.length >= 2 ?
+      {socket?.id !== gameObject?.player1.id && socket?.id !== gameObject?.player2.id && selectedEmoji.length >= 2 ?
 
         <div className="flex flex-col justify-center items-center h-full">
 
@@ -156,24 +150,20 @@ export default function Home() {
 
             <div>
               <h5 className={`${gameObject?.turn === gameObject?.player1.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject?.player1.emoji} Jogador 1</h5>
-              <span>{gameObject?.player1.score}</span>
+              <span>{gameObject?.player1.score || '?'}</span>
             </div>
 
             <div>
               <h5 className={`${gameObject?.turn === gameObject?.player2.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject?.player2.emoji} Jogador 2</h5>
-              <span>{gameObject?.player2.score}</span>
+              <span>{gameObject?.player2.score || '?'}</span>
             </div>
 
           </div>
 
-          {gameObject &&
-            <GameBoard
-              userId={socket?.id as string}
-              player1={gameObject.player1}
-              player2={gameObject.player2}
-              turn={gameObject.turn}
-              game={gameObject.game}
-              onChangeGame={(game) => handleGameChange(game)} />}
+          <GameBoard
+            socket={socket as Socket}
+            gameObject={gameObject}
+            onChangeGame={(game) => handleGameChange(game)} />
 
         </div> :
 
@@ -201,12 +191,9 @@ export default function Home() {
             </div>
 
             <GameBoard
-              userId={socket?.id as string}
-              player1={gameObject.player1}
-              player2={gameObject.player2}
-              turn={gameObject.turn}
-              game={gameObject.game}
-              onChangeGame={(game) => handleGameChange(game)} />
+            socket={socket as Socket}
+            gameObject={gameObject}
+            onChangeGame={(game) => handleGameChange(game)} />
 
           </div> :
 
