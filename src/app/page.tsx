@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import GameBoard from "./components/GameBoard";
 import EndGame from "./components/EndGame";
+import Link from "next/link";
 
 export default function Home() {
 
@@ -39,6 +40,9 @@ export default function Home() {
   useEffect(function () {
 
     if (room) {
+
+      // Update the URL when the room is changed.
+      window.history.replaceState(null, '', `?room=${room}`);
 
       fetch('/api/game_server').finally(function () {
 
@@ -116,6 +120,23 @@ export default function Home() {
 
   }
 
+  function handleChangeRoom() {
+
+    if (typeof window !== 'undefined') {
+
+      setsocket(undefined);
+
+      setwasEmojiSelected(false);
+      setselectedEmojis([]);
+
+      setgameObject(undefined);
+
+      setroom(window.crypto.randomUUID());
+
+    }
+
+  }
+
   return (
 
     <>
@@ -125,7 +146,7 @@ export default function Home() {
         <h2 className="text-3xl">Multiplayer 🎮</h2>
       </header>
 
-      {gameObject?.player1.emoji && gameObject?.player2.emoji && socket && isTheUserSpectator(socket, gameObject) ?
+      {selectedEmoji.length >= 2 ?
 
         <div className="flex flex-col justify-center items-center h-full">
 
@@ -134,24 +155,25 @@ export default function Home() {
           <div className="flex justify-between items-end w-[240px] mb-2">
 
             <div>
-              <h5 className={`${gameObject.turn === gameObject.player1.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject.player1.emoji} Jogador 1</h5>
-              <span>{gameObject.player1.score}</span>
+              <h5 className={`${gameObject?.turn === gameObject?.player1.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject?.player1.emoji} Jogador 1</h5>
+              <span>{gameObject?.player1.score}</span>
             </div>
 
             <div>
-              <h5 className={`${gameObject.turn === gameObject.player2.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject.player2.emoji} Jogador 2</h5>
-              <span>{gameObject.player2.score}</span>
+              <h5 className={`${gameObject?.turn === gameObject?.player2.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject?.player2.emoji} Jogador 2</h5>
+              <span>{gameObject?.player2.score}</span>
             </div>
 
           </div>
 
-          <GameBoard
-            userId={socket?.id as string}
-            player1={gameObject.player1}
-            player2={gameObject.player2}
-            turn={gameObject.turn}
-            game={gameObject.game}
-            onChangeGame={(game) => handleGameChange(game)} />
+          {gameObject &&
+            <GameBoard
+              userId={socket?.id as string}
+              player1={gameObject.player1}
+              player2={gameObject.player2}
+              turn={gameObject.turn}
+              game={gameObject.game}
+              onChangeGame={(game) => handleGameChange(game)} />}
 
         </div> :
 
@@ -221,6 +243,8 @@ export default function Home() {
           </div>
 
       }
+
+      <button onClick={() => handleChangeRoom()}>Trocar de sala</button>
 
       <footer className="mt-4 mb-4">
         <h6>Developed by 🤓 <a className="text-blue-600" href="https://julio-faria-portfolio-jf.netlify.app/" target="_blank">Júlio Faria</a></h6>
