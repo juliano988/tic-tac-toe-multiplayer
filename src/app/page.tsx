@@ -108,7 +108,14 @@ export default function Home() {
 
   function handleCopyGameLink() {
 
-    navigator.clipboard.writeText(`${typeof window !== 'undefined' && window.location.origin}?room=${room}`);
+    const roomURL = `${typeof window !== 'undefined' && window.location.origin}?room=${room}`
+
+    navigator.clipboard.writeText(roomURL);
+
+    navigator.share({
+      title: 'Jogo da Velha 👵 Multiplayer',
+      url: roomURL
+    })
 
     setwasLinkCopied(true);
 
@@ -150,12 +157,12 @@ export default function Home() {
 
             <div>
               <h5 className={`${gameObject?.turn === gameObject?.player1.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject?.player1.emoji} Jogador 1</h5>
-              <span>{gameObject?.player1.score || '?'}</span>
+              <span>{gameObject?.player1.score !== null ? gameObject?.player1.score : '?'}</span>
             </div>
 
             <div>
               <h5 className={`${gameObject?.turn === gameObject?.player2.id ? 'scale-110 font-medium' : 'scale-90'} transition-all text-lg`}>{gameObject?.player2.emoji} Jogador 2</h5>
-              <span>{gameObject?.player2.score || '?'}</span>
+              <span>{gameObject?.player2.score !== null ? gameObject?.player2.score : '?'}</span>
             </div>
 
           </div>
@@ -173,7 +180,7 @@ export default function Home() {
 
             {gameObject.turn === socket?.id ? <span className={`mb-3 text-lg motion-safe:animate-bounce transition-all`}>👇 Sua vez! 👇</span> : <></>}
             {gameObject.turn !== socket?.id ? <span className={`mb-3 text-lg transition-all`}>
-              {socket?.id === gameObject.player1.id ? gameObject.player1.emoji : gameObject.player2.emoji} Pensando...
+              {gameObject.turn === gameObject.player1.id ? gameObject.player1.emoji : gameObject.player2.emoji} Pensando...
             </span> : <></>}
 
             <div className="flex justify-between items-end w-[240px] mb-2">
@@ -191,9 +198,9 @@ export default function Home() {
             </div>
 
             <GameBoard
-            socket={socket as Socket}
-            gameObject={gameObject}
-            onChangeGame={(game) => handleGameChange(game)} />
+              socket={socket as Socket}
+              gameObject={gameObject}
+              onChangeGame={(game) => handleGameChange(game)} />
 
           </div> :
 
